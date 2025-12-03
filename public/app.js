@@ -15,35 +15,58 @@
 
 'use strict';
 
-(function () {
-  // Storage key and helpers
-  const STORAGE_KEY = 'todo_tasks_v1';
-  /** @returns {Array} */
-  function loadTasks() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return [];
-      const parsed = JSON.parse(raw);
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
-    }
-  }
-  function saveTasks(tasks) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-  }
-  function generateId() {
-    return (
-      't_' +
-      Math.random().toString(36).slice(2, 8) +
-      Date.now().toString(36).slice(-4)
-    );
-  }
+// Storage key
+const STORAGE_KEY = 'todo_tasks_v1';
 
-  // DOM refs
-  const form = /** @type {HTMLFormElement} */ (
-    document.getElementById('task-form')
+/** @returns {Array} */
+export function loadTasks() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveTasks(tasks) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+}
+
+export function generateId() {
+  return (
+    't_' +
+    Math.random().toString(36).slice(2, 8) +
+    Date.now().toString(36).slice(-4)
   );
+}
+
+export function escapeHtml(str) {
+  return String(str)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+export function badgeForStatus(status) {
+  const label =
+    {
+      todo: 'To do',
+      'in-progress': 'In progress',
+      blocked: 'Blocked',
+      done: 'Done',
+    }[status] || status;
+  return `<span class="badge">${label}</span>`;
+}
+
+// Initialize App if DOM is present
+const form = typeof document !== 'undefined' ? document.getElementById('task-form') : null;
+
+if (form) {
+  // DOM refs
   const formTitle = /** @type {HTMLElement} */ (
     document.getElementById('form-title')
   );
@@ -125,26 +148,6 @@
 				`;
         list.appendChild(li);
       });
-  }
-
-  function badgeForStatus(status) {
-    const label =
-      {
-        todo: 'To do',
-        'in-progress': 'In progress',
-        blocked: 'Blocked',
-        done: 'Done',
-      }[status] || status;
-    return `<span class="badge">${label}</span>`;
-  }
-
-  function escapeHtml(str) {
-    return String(str)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#039;');
   }
 
   // Form handling
@@ -250,4 +253,4 @@
 
   // Initial paint
   render();
-})();
+}
