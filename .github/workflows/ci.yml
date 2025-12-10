@@ -23,7 +23,7 @@ jobs:
         run: npm ci
 
       - name: Run Vitest unit tests
-        run: npx vitest run --reporter=dot
+        run: npm run test
 
       - name: Run Cypress E2E tests
         uses: cypress-io/github-action@v6
